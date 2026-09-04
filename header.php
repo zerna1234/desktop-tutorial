@@ -2,6 +2,9 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Detect current page filename
+$currentPage = basename($_SERVER['PHP_SELF']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -24,29 +27,58 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
         </div>
         <nav class="nav-links">
-            <a href="index.php#home" class="active">HOME</a>
+            <a href="index.php#home" class="<?php echo ($currentPage === 'index.php') ? 'active' : ''; ?>">HOME</a>
             <a href="index.php#about">ABOUT US</a>
-            <a href="services.php">SERVICE</a>
-            <a href="index.php#portfolio">PORTFOLIO</a>
-            <a href="index.php#blog">BLOG</a>
-            <a href="index.php#contact">CONTACT</a>
             
             <?php if (isset($_SESSION['customer_id'])): ?>
-                <!-- SHOW WHEN LOGGED IN -->
-                <a href="customer_dashboard.php" style="color: #4facfe; font-weight: 600;">
+                <!-- LOGGED IN NAVIGATION -->
+                <a href="services.php" class="<?php echo ($currentPage === 'services.php') ? 'active' : ''; ?>">SERVICE</a>
+                <a href="index.php#portfolio">PORTFOLIO</a>
+                <a href="index.php#blog">BLOG</a>
+                <a href="index.php#contact">CONTACT</a>
+                <a href="customer_dashboard.php" class="<?php echo ($currentPage === 'customer_dashboard.php') ? 'active' : ''; ?>" style="color: #4facfe; font-weight: 600;">
                     Hi, <?php echo htmlspecialchars($_SESSION['customer_name']); ?>
                 </a>
                 <a href="customer_dashboard.php?action=logout" style="color: #dc3545; font-size: 13px;">LOGOUT</a>
             <?php else: ?>
-                <!-- SHOW WHEN LOGGED OUT -->
-                <button onclick="document.getElementById('loginModal').style.display='flex'" style="background: transparent; border: 1px solid #4facfe; color: #4facfe; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; transition: 0.3s;">
-                    LOGIN
-                </button>
+                <!-- LOGGED OUT NAVIGATION (Triggers Login Modal for protected routes) -->
+                <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">SERVICE</a>
+                <a href="index.php#portfolio">PORTFOLIO</a>
+                <a href="index.php#blog">BLOG</a>
+                <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">CONTACT</a>
+                
+                <?php if ($currentPage === 'customer_auth.php'): ?>
+                    <!-- Direct link on customer_auth.php -->
+                    <a href="customer_auth.php" class="active" style="border: 1px solid #4facfe; color: #4facfe; padding: 6px 14px; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 14px; font-family: 'Poppins', sans-serif;">
+                        LOGIN
+                    </a>
+                <?php else: ?>
+                    <!-- Open modal button on all other pages -->
+                    <button onclick="document.getElementById('loginModal').style.display='flex'" style="background: transparent; border: 1px solid #4facfe; color: #4facfe; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px; transition: 0.3s;">
+                        LOGIN
+                    </button>
+                <?php endif; ?>
             <?php endif; ?>
         </nav>
-        <a href="index.php#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
+
+        <!-- REVISED HEADER CTA BUTTON ("GET IN TOUCH") -->
+        <?php if (isset($_SESSION['customer_id'])): ?>
+            <?php if ($currentPage === 'index.php'): ?>
+                <!-- On home page: smooth scroll directly to contact section -->
+                <a href="#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
+            <?php else: ?>
+                <!-- On external pages: navigate to index page contact anchor -->
+                <a href="index.php#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
+            <?php endif; ?>
+        <?php else: ?>
+            <!-- Logged out: open authentication modal -->
+            <button onclick="document.getElementById('loginModal').style.display='flex'" class="btn-primary" style="border: none; cursor: pointer; font-family: 'Poppins', sans-serif;">
+                GET IN TOUCH &rarr;
+            </button>
+        <?php endif; ?>
     </header> 
 
+    <?php if (!isset($hideModal) || !$hideModal): ?>
     <!-- POP-UP CUSTOMER LOGIN MODAL -->
     <div id="loginModal" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.85); justify-content: center; align-items: center; font-family: 'Poppins', sans-serif;">
         <div style="background: #1a1a1a; padding: 35px; border: 1px solid #333; border-radius: 10px; width: 90%; max-width: 400px; position: relative; color: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.7);">
@@ -81,8 +113,9 @@ if (session_status() === PHP_SESSION_NONE) {
     <script>
     window.onclick = function(event) {
         var modal = document.getElementById('loginModal');
-        if (event.target == modal) {
+        if (modal && event.target == modal) {
             modal.style.display = "none";
         }
     }
     </script>
+    <?php endif; ?>

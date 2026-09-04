@@ -67,7 +67,11 @@ $stats = [
                     We deliver innovative, secure, and reliable IT solutions that help businesses and individuals succeed through technology, digital transformation, and professional services.
                 </p>
                 <div class="hero-buttons">
-                    <a href="#services" class="btn-primary">OUR SERVICE &rarr;</a>
+                    <?php if (isset($_SESSION['customer_id'])): ?>
+                        <a href="services.php" class="btn-primary">OUR SERVICE &rarr;</a>
+                    <?php else: ?>
+                        <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;" class="btn-primary">OUR SERVICE &rarr;</a>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -139,7 +143,11 @@ $stats = [
                 <div class="service-card">
                     <h3><?php echo htmlspecialchars($service['title']); ?></h3>
                     <p><?php echo htmlspecialchars($service['desc']); ?></p>
-                    <a href="services.php#<?php echo $service['slug']; ?>" class="link-btn">LEARN MORE &rarr;</a>
+                    <?php if (isset($_SESSION['customer_id'])): ?>
+                        <a href="services.php#<?php echo $service['slug']; ?>" class="link-btn">LEARN MORE &rarr;</a>
+                    <?php else: ?>
+                        <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;" class="link-btn">LEARN MORE &rarr;</a>
+                    <?php endif; ?>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -180,10 +188,14 @@ $stats = [
     <section class="cta-section">
         <h2>LET'S BUILD SOMETHING GREAT TOGETHER</h2>
         <p>We are ready to help your business grow with smart technology solutions</p>
-        <a href="#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
+        <?php if (isset($_SESSION['customer_id'])): ?>
+            <a href="#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
+        <?php else: ?>
+            <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;" class="btn-primary">GET IN TOUCH &rarr;</a>
+        <?php endif; ?>
     </section>
     
-<!-- CONTACT SECTION (FORCED FULL-WIDTH CENTER BREAKOUT) -->
+    <!-- CONTACT SECTION (PROTECTED ACCESS) -->
     <section id="contact" style="
         position: relative;
         width: 100vw !important;
@@ -206,31 +218,44 @@ $stats = [
         </div>
 
         <div style="width: 100%; max-width: 600px; margin: 0 auto; box-sizing: border-box;">
-            <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
-                <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
-                    Thank you! Your message has been sent successfully.
-                </div>
-            <?php elseif (isset($_GET['status']) && $_GET['status'] === 'error'): ?>
-                <div class="alert alert-error" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
-                    Sorry, something went wrong. Please try again.
+            <?php if (isset($_SESSION['customer_id'])): ?>
+                <!-- LOGGED IN USER: SHOW CONTACT FORM -->
+                <?php if (isset($_GET['status']) && $_GET['status'] === 'success'): ?>
+                    <div class="alert alert-success" style="background-color: #d4edda; color: #155724; padding: 12px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                        Thank you! Your message has been sent successfully.
+                    </div>
+                <?php elseif (isset($_GET['status']) && $_GET['status'] === 'error'): ?>
+                    <div class="alert alert-error" style="background-color: #f8d7da; color: #721c24; padding: 12px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                        Sorry, something went wrong. Please try again.
+                    </div>
+                <?php endif; ?>
+
+                <form action="send-email.php" method="POST" style="display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box;">
+                    <div style="width: 100%;">
+                        <input type="text" name="name" placeholder="Your Full Name" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
+                    </div>
+                    <div style="width: 100%;">
+                        <input type="email" name="email" placeholder="Your Email Address" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
+                    </div>
+                    <div style="width: 100%;">
+                        <input type="text" name="subject" placeholder="Subject" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
+                    </div>
+                    <div style="width: 100%;">
+                        <textarea name="message" rows="5" placeholder="Your Message" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block; resize: vertical;"></textarea>
+                    </div>
+                    <button type="submit" name="submit" class="btn-primary" style="width: 100%; padding: 14px; cursor: pointer; border: none; border-radius: 6px; font-weight: 600;">Send Message &rarr;</button>
+                </form>
+
+            <?php else: ?>
+                <!-- LOGGED OUT USER: SHOW LOGIN PROMPT -->
+                <div style="text-align: center; padding: 40px 20px; background: #1a1a1a; border-radius: 8px; border: 1px solid #333; color: #fff;">
+                    <h3 style="color: #4facfe; margin-top: 0; margin-bottom: 12px; font-size: 20px;">Please Log In to Contact Us</h3>
+                    <p style="color: #aaa; margin-bottom: 25px; font-size: 14px;">You must have an active customer account to access our contact form and get in touch with our team.</p>
+                    <button onclick="document.getElementById('loginModal').style.display='flex'" style="background: #4facfe; color: #fff; border: none; padding: 12px 28px; border-radius: 5px; font-weight: 600; cursor: pointer; font-size: 15px; font-family: 'Poppins', sans-serif; transition: 0.3s;">
+                        Login / Register Now
+                    </button>
                 </div>
             <?php endif; ?>
-
-            <form action="send-email.php" method="POST" style="display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box;">
-                <div style="width: 100%;">
-                    <input type="text" name="name" placeholder="Your Full Name" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
-                </div>
-                <div style="width: 100%;">
-                    <input type="email" name="email" placeholder="Your Email Address" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
-                </div>
-                <div style="width: 100%;">
-                    <input type="text" name="subject" placeholder="Subject" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
-                </div>
-                <div style="width: 100%;">
-                    <textarea name="message" rows="5" placeholder="Your Message" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block; resize: vertical;"></textarea>
-                </div>
-                <button type="submit" name="submit" class="btn-primary" style="width: 100%; padding: 14px; cursor: pointer; border: none; border-radius: 6px; font-weight: 600;">Send Message &rarr;</button>
-            </form>
         </div>
     </section>
 
