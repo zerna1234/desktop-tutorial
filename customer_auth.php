@@ -80,10 +80,11 @@ if (file_exists(__DIR__ . '/header.php')) include __DIR__ . '/header.php';
     <?php endif; ?>
 
     <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-top: 30px;">
+      <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-top: 30px;">
         <!-- LOGIN CARD -->
         <div style="flex: 1; min-width: 280px; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333;">
             <h3 style="color: #4facfe; margin-top: 0;">Login</h3>
-            <form method="POST" action="customer_auth.php">
+            <form method="POST" action="">
                 <input type="hidden" name="action" value="login">
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; color: #ccc; margin-bottom: 5px;">Email Address</label>
@@ -100,7 +101,7 @@ if (file_exists(__DIR__ . '/header.php')) include __DIR__ . '/header.php';
         <!-- REGISTRATION CARD -->
         <div style="flex: 1; min-width: 280px; background: #1a1a1a; padding: 30px; border-radius: 8px; border: 1px solid #333;">
             <h3 style="color: #00f2fe; margin-top: 0;">Create Account</h3>
-            <form method="POST" action="customer_auth.php">
+            <form method="POST" action="">
                 <input type="hidden" name="action" value="register">
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; color: #ccc; margin-bottom: 5px;">Full Name</label>
@@ -118,6 +119,5 @@ if (file_exists(__DIR__ . '/header.php')) include __DIR__ . '/header.php';
             </form>
         </div>
     </div>
-</section>
 
 <?php if (file_exists(__DIR__ . '/footer.php')) include __DIR__ . '/footer.php'; ?>
