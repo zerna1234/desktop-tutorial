@@ -1,4 +1,14 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Redirect logged-out users to the registration/login portal
+if (!isset($_SESSION['customer_id'])) {
+    header("Location: customer_auth.php");
+    exit;
+}
+
 $pageTitle = "Our Services - MZ Tech Solution";
 include 'header.php';
 
