@@ -26,7 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     } else {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
         try {
-            $stmt = $pdo->prepare("INSERT INTO customers (fullname, email, password) VALUES (:name, :email, :pass)");
+            // Set created_at AND last_login at registration time
+            $stmt = $pdo->prepare("INSERT INTO customers (fullname, email, password, created_at, last_login) VALUES (:name, :email, :pass, NOW(), NOW())");
             $stmt->execute([
                 ':name'  => htmlspecialchars($fullname),
                 ':email' => $email,
@@ -61,6 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         if ($user && password_verify($password, $user['password'])) {
             $_SESSION['customer_id']   = $user['id'];
             $_SESSION['customer_name'] = $user['fullname'];
+            
+            // --- UPDATE LAST_LOGIN TIMESTAMP ---
+            $updateStmt = $pdo->prepare("UPDATE customers SET last_login = NOW() WHERE id = :id");
+            $updateStmt->execute([':id' => $user['id']]);
+            // -----------------------------------
+
             header("Location: customer_dashboard.php");
             exit;
         } else {
