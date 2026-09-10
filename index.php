@@ -1,4 +1,41 @@
 <?php
+session_start();
+require_once 'db.php';
+
+// Process form submission directly inside index.php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit'])) {
+    if (isset($_SESSION['customer_id'])) {
+        $fullname = trim($_POST['name'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
+        $subject  = trim($_POST['subject'] ?? '');
+        $message  = trim($_POST['message'] ?? '');
+
+        if (!empty($fullname) && !empty($email) && !empty($subject) && !empty($message)) {
+            try {
+                $stmt = $pdo->prepare("INSERT INTO contact_messages (fullname, email, subject, message) VALUES (:name, :email, :subject, :msg)");
+                $stmt->execute([
+                    ':name'    => $fullname,
+                    ':email'   => $email,
+                    ':subject' => $subject,
+                    ':msg'     => $message
+                ]);
+
+                header("Location: index.php?status=success#contact");
+                exit;
+            } catch (PDOException $e) {
+                header("Location: index.php?status=error#contact");
+                exit;
+            }
+        } else {
+            header("Location: index.php?status=error#contact");
+            exit;
+        }
+    } else {
+        header("Location: index.php#contact");
+        exit;
+    }
+}
+
 $pageTitle = "MZ Tech Solution - Home";
 include 'header.php';
 
@@ -24,7 +61,6 @@ $services = [
     ["title" => "Cloud Solutions", "slug" => "cloud-solutions", "desc" => "Scalable and secure cloud solutions for modern businesses."],
     ["title" => "Cybersecurity", "slug" => "cybersecurity", "desc" => "Protecting your data and systems with advanced security solutions."]
 ];
-
 
 $solutions = [
     [
@@ -230,7 +266,7 @@ $stats = [
                     </div>
                 <?php endif; ?>
 
-                <form action="send-email.php" method="POST" style="display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box;">
+                <form action="index.php#contact" method="POST" style="display: flex; flex-direction: column; gap: 15px; width: 100%; box-sizing: border-box;">
                     <div style="width: 100%;">
                         <input type="text" name="name" placeholder="Your Full Name" required style="width: 100%; padding: 14px 16px; border: 1px solid #333; background-color: #1a1a1a; color: #ffffff; border-radius: 6px; font-family: 'Poppins', sans-serif; font-size: 15px; box-sizing: border-box; display: block;">
                     </div>
