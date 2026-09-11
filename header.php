@@ -28,24 +28,25 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         </div>
         <nav class="nav-links">
             <a href="index.php#home" class="<?php echo ($currentPage === 'index.php') ? 'active' : ''; ?>">HOME</a>
-            <a href="index.php#about">ABOUT US</a>
             
             <?php if (isset($_SESSION['customer_id'])): ?>
                 <!-- LOGGED IN NAVIGATION -->
+                <a href="index.php#about">ABOUT US</a>
                 <a href="services.php" class="<?php echo ($currentPage === 'services.php') ? 'active' : ''; ?>">SERVICE</a>
                 <a href="index.php#portfolio">PORTFOLIO</a>
-                <a href="index.php#blog">BLOG</a>
+                <a href="blogs.php" class="<?php echo ($currentPage === 'blogs.php') ? 'active' : ''; ?>">BLOG</a>
                 <a href="index.php#contact">CONTACT</a>
                 <a href="customer_dashboard.php" class="<?php echo ($currentPage === 'customer_dashboard.php') ? 'active' : ''; ?>" style="color: #4facfe; font-weight: 600;">
                     Hi, <?php echo htmlspecialchars($_SESSION['customer_name']); ?>
                 </a>
                 <a href="customer_dashboard.php?action=logout" style="color: #dc3545; font-size: 13px;">LOGOUT</a>
             <?php else: ?>
-                <!-- LOGGED OUT NAVIGATION (Triggers Login Modal for protected routes) -->
+                <!-- LOGGED OUT NAVIGATION (Triggers Login Modal for restricted sections) -->
+                <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">ABOUT US</a>
                 <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">SERVICE</a>
-                <a href="index.php#portfolio">PORTFOLIO</a>
-                <a href="index.php#blog">BLOG</a>
-                <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">CONTACT</a>
+                <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">PORTFOLIO</a>
+                <a href="#" onclick="document.getElementById('loginModal').style.display='flex'; return false;">BLOG</a>
+                <a href="index.php#contact">CONTACT</a>
                 
                 <?php if ($currentPage === 'customer_auth.php'): ?>
                     <!-- Direct link on customer_auth.php -->
@@ -61,17 +62,14 @@ $currentPage = basename($_SERVER['PHP_SELF']);
             <?php endif; ?>
         </nav>
 
-        <!-- REVISED HEADER CTA BUTTON ("GET IN TOUCH") -->
+        <!-- HEADER CTA BUTTON ("GET IN TOUCH") -->
         <?php if (isset($_SESSION['customer_id'])): ?>
             <?php if ($currentPage === 'index.php'): ?>
-                <!-- On home page: smooth scroll directly to contact section -->
                 <a href="#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
             <?php else: ?>
-                <!-- On external pages: navigate to index page contact anchor -->
                 <a href="index.php#contact" class="btn-primary">GET IN TOUCH &rarr;</a>
             <?php endif; ?>
         <?php else: ?>
-            <!-- Logged out: open authentication modal -->
             <button onclick="document.getElementById('loginModal').style.display='flex'" class="btn-primary" style="border: none; cursor: pointer; font-family: 'Poppins', sans-serif;">
                 GET IN TOUCH &rarr;
             </button>
